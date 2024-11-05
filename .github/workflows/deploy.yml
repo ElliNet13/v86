@@ -128,19 +128,12 @@ jobs:
             build/libv86*.js.map
             build/v86*.wasm
 
-  upload:
+  deploy:
     name: Upload and Release
     runs-on: ubuntu-latest
     needs: test
     if: github.ref == 'refs/heads/master'
     steps:
-      - name: Delete previous release/tag if exists
-        uses: dev-drprasad/delete-tag-and-release@v1.0.1
-        with:
-          delete_release: true
-          tag_name: latest
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Download build artifacts
         uses: actions/download-artifact@v3
         with:
@@ -149,16 +142,6 @@ jobs:
 
       - name: Verify downloaded structure
         run: ls -R build
-
-      - name: Publish to GitHub Releases
-        uses: ncipollo/release-action@v1
-        with:
-          name: Latest Release
-          tag: latest
-          commit: master
-          body: ${{ github.event.head_commit.message }}
-          artifacts: "build/libv86*.js,build/libv86*.js.map,build/v86*.wasm"
-          prerelease: true
 
       - name: Setup Pages for deployment
         uses: actions/configure-pages@v5
